@@ -9,8 +9,8 @@ packagelist(package_list_order,keyword)
 }
 \arguments{
   \item{package_list_order}{order of the frame,"date" is selected by default,creating an R object.If you choose "name", the frame will be sorted by name.}
-}
   \item{keyword}{make the frame screen by keyword,hold the ranks including keyword}
+}
 \details{
 In this version ,there may be duplicate value in the data.frame.
 }
