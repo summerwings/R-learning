@@ -1,5 +1,5 @@
 # R-learning
-the newbee learing R.
+the newbee learNing R.
 
 poor coding and english.
 
