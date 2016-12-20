@@ -16,12 +16,14 @@ packagelist <- function(package_list_order="date",keyword){
     names <- the_data[c(num_of_package)]
     dis <- the_data[c(num_of_package+1)]
     dates <- the_data[c(num_of_package+2)]
-    frame_name <- data.frame(date = dates, package = names,title = dis)
-    frame_result1=package_frame[grep(keyword,package_frame[,1]),] 
-    frame_result2=package_frame[grep(keyword,package_frame[,2]),]
-    frame_result2=package_frame[grep(keyword,package_frame[,3]),]
-    frame_result<-rbind(frame_result1,frame_result2,frame_result3)
-    return(frame_result)
+    package_frame <- data.frame(date = dates, package = names,title = dis)
+    frame_result1 = package_frame[grep(keyword,package_frame[,1]),] 
+    frame_result2 = package_frame[grep(keyword,package_frame[,2]),]
+    frame_result3 = package_frame[grep(keyword,package_frame[,3]),]
+    frame_result <- rbind(frame_result1,frame_result2,frame_result3)
+    frame_final <- unique(frame_result)
+    frame_final <- frame_final[order( frame_final[,1]),]
+    return(frame_final)
   }    
   
   if (package_list_order == "name") 
@@ -41,10 +43,12 @@ packagelist <- function(package_list_order="date",keyword){
     names <- the_data[c(num_of_package)]
     dis <- the_data[c(num_of_package+1)]
     package_frame <- data.frame(package = names,title = dis)
-    frame_result1=package_frame[grep(keyword,package_frame[,1]),] 
-    frame_result2=package_frame[grep(keyword,package_frame[,2]),]
-    frame_result<-rbind(frame_result1,frame_result2)
-    return(frame_result)
+    frame_result1 = package_frame[grep(keyword,package_frame[,1]),] 
+    frame_result2 = package_frame[grep(keyword,package_frame[,2]),]
+    frame_result <- rbind(frame_result1,frame_result2)
+    frame_final <- unique(frame_result)
+    frame_final <- frame_final[order( frame_final[,1]),]
+    return(frame_final)
   }
   
   else {
