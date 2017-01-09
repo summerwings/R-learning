@@ -2,7 +2,7 @@ packagelist <- function(package_list_order = "date",keyword = ""){
   if (package_list_order == "date") 
   {      
     url <- "https://cran.r-project.org/web/packages/available_packages_by_date.html"
-    webpage <- read_html(url,encoding="ISO-8859-1")
+    webpage <- getURL(url,encoding="ISO-8859-1")
     the_data <- webpage %>% html_nodes("td") %>% html_text()
     n <- length(the_data)
     i <- 1
@@ -29,7 +29,7 @@ packagelist <- function(package_list_order = "date",keyword = ""){
   if (package_list_order == "name") 
   {
     url <- "https://cran.r-project.org/web/packages/available_packages_by_name.html"
-    webpage <- read_html(url,encoding="ISO-8859-1")
+    webpage <- getURL(url,encoding="ISO-8859-1")
     the_data <- webpage %>% html_nodes("td") %>% html_text()
     n <- length(the_data)
     i <- 1
