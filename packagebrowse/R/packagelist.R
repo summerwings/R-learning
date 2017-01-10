@@ -1,4 +1,5 @@
 packagelist <- function(package_list_order = "date",keyword = ""){
+  library(rvest,warn.conflicts = F)
   if (package_list_order == "date") 
   {      
     url <- "https://cran.r-project.org/web/packages/available_packages_by_date.html"
