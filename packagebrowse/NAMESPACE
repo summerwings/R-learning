@@ -1,1 +1,2 @@
-import(rvest)
+exportPattern("^[[:alpha:]]+")
+importForm( "read_html","rvest")
