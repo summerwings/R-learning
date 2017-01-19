@@ -1,5 +1,5 @@
 exportPattern("^[[:alpha:]]+")
-importFrom(magrittr,read_html)
+importFrom(dplyr,"%>%")
 importFrom(rvest,html_attr)
 importFrom(rvest,html_nodes)
 importFrom(rvest,html_table)
