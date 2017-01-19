@@ -1,5 +1,5 @@
 exportPattern("^[[:alpha:]]+")
-importFrom(httr,read_html)
+importFrom(selectr,read_html)
 importFrom(rvest,html_attr)
 importFrom(rvest,html_nodes)
 importFrom(rvest,html_table)
