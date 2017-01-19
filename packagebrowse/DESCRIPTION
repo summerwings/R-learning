@@ -9,4 +9,4 @@ Maintainer: Summer Zhang <summerwings@outlook.com>
 Description:This package provides a demo for downloading a lists of R packages from <https://cran.r-project.org/web/packages/>  sorted by date of publication or name ,  and opening packages' webpage and reference manual in  your browser.
 License: GPL
 Encoding: UTF-8
-LazyData: true
+LazyData:flase
