@@ -1,2 +1,2 @@
 exportPattern("^[[:alpha:]]+")
-importClassesFrom(read_html,rvest) 
+importFrom(read_html,rvest) 
