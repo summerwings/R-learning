@@ -2,7 +2,6 @@ Package: packagebrowse
 Type: Package
 Title:A demo for browsing a list of R packages.
 Version: 0.1.0
-Depend:R (>= 3.2.3)
 Imports:rvest
 Published:2016-12-16
 Author: Summer Zhang
