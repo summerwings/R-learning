@@ -47,7 +47,7 @@ packagelist <- function(package_list_order = "date",keyword = ""){
     frame_result2 = package_frame[grep(keyword,package_frame[,2]),]
     frame_result <- rbind(frame_result1,frame_result2)
     frame_final <- unique(frame_result)
-    frame_final <- frame_final[order( frame_final[,1]),]
+    frame_final <- frame_final[-order( frame_final[,1]),]
     return(frame_final)
   }
   
