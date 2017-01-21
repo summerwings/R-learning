@@ -3,7 +3,7 @@ Type: Package
 Title:A demo for browsing a list of R packages.
 Version: 0.2.0
 Imports:rvest,xml2,dplyr
-Published:2016-12-16
+Published:2016-1-21
 Author: Summer Zhang
 Maintainer: Summer Zhang <summerwings@outlook.com>
 Description:This package provides a demo for downloading a lists of R packages from <https://cran.r-project.org/web/packages/>  sorted by date of publication or name ,  and opening packages' webpage and reference manual in  your browser.
