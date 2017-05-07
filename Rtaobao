@@ -1,1 +1,32 @@
-
+library(RCurl)
+library(stringr)
+keyword<-"%E6%BB%B4%E8%83%B6"
+today<-Sys.Date()
+today<-format(today, "%Y%m%d")
+allpages<-c()
+allnames<-c()
+allprices<-c()
+for (i in 1:100){
+  pages<-(i-1)*44
+  url <-(paste("https://s.taobao.com/search?q=",
+               keyword,
+               "&imgfile=&js=1&stats_click=search_radio_all%3A1&initiative_id=staobaoz_",
+               today,
+               "&ie=utf8&bcoffset=4&ntoffset=4&p4ppushleft=1%2C48&s=",
+               pages,
+               sep="")
+  
+  )
+  web<-getURL(url)
+  data.frame(gregexpr(",\"title\":\"",web))->i1
+  i1<-data.frame(i1[-c(37:45),])
+  data.frame(gregexpr("raw_title",web))->i2
+  data.frame(gregexpr("view_price\":\"",web))->i3
+  data.frame(gregexpr("\",\"view_fee\"",web))->i4
+  for (k in 1:36){
+  name<-substr(web, (i1[k,]),(i2[k,]))
+  price<-substr(web, (i3[k,]),(i4[k,]))
+  allnames<-c(allnames,name)
+  allprices<-c(allprices,price)
+  }
+}
