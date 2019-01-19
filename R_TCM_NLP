@@ -1,0 +1,556 @@
+TCM1<-read.csv('clipboard',sep = '')
+TCM2<-read.csv('clipboard',sep = '')
+TCM3<-read.csv('clipboard',sep = '')
+TCM4<-read.csv('clipboard',sep = '')
+TCM5<-read.csv('clipboard',sep = '')
+TCM6<-read.csv('clipboard',sep = '')
+TCM7<-read.csv('clipboard',sep = '')
+tcmtotal<-rbind(TCM1,TCM2)
+tcmtotal<-rbind(tcmtotal,TCM3)
+tcmtotal<-rbind(tcmtotal,TCM4)
+tcmtotal<-rbind(tcmtotal,TCM5)
+tcmtotal<-rbind(tcmtotal,TCM6)
+tcmtotal<-rbind(tcmtotal,TCM7)
+herb<-data.frame(table(tcmtotal$HERBMED_NAME))
+id[id ==0 ]<-NA
+library(devtools)new<-na.omit(id)
+
+
+
+digxu<-read.csv('clipboard',sep = '')
+digpixu<-glm(dig$TCMDIG~. ,data = dig,family=binomial("logit"))
+summary(digpixu)
+
+digqi<-read.csv('clipboard',sep = '')
+digqiji<-glm(digqi$TCMQIJI~. ,data = dig,family=binomial("logit"))
+summary(digqiji)
+
+
+
+#构建词向量
+
+install.packages("devtools")
+install.packages("stringi")
+install.packages("pbapply")
+install.packages("Rcpp")
+install.packages("RcppProgress")
+library(devtools)
+install_github("qinwf/cidian")
+install.packages('dplyr')
+
+
+syptom<-read.csv('clipboard',sep = '')
+library(devtools)
+install_github("qinwf/jiebaR")
+library(jiebaR)
+
+mixseg = worker()
+segment(as.character(syptom$初诊[2]), mixseg )
+
+tagger = worker("tag") 
+
+keys = worker("keywords", topn = 4,idf=IDFPATH)
+
+as.character()
+
+install.packages("dplyr")
+library(dplyr)
+
+sperawords1<-data.frame()
+sperawords2<-data.frame()
+sperawords3<-data.frame()
+sperawords4<-data.frame()
+sperawords5<-data.frame()
+sperawords6<-data.frame()
+sperawords7<-data.frame()
+sperawords8<-data.frame()
+#初诊词频
+for (i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$初诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords1<-rbind(sperawords1, tmpword)
+  names(sperawords1)<-'a'
+  }
+
+sperawords1<-unique(sperawords1)
+dims<-dim(sperawords1)[1]+1
+sperawords1t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords1t)<-c("ID",as.character(sperawords1$a))
+sperawords1tt<-sperawords1t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$初诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords1tt<-full_join(sperawords1tt, tmpwordt)
+  print(i)
+  }
+write.csv(sperawords1tt,'初诊.csv') 
+
+
+#二诊词频
+for (i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$二诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords2<-rbind(sperawords2, tmpword)
+  names(sperawords2)<-'a'
+}
+
+sperawords2<-unique(sperawords2)
+dims<-dim(sperawords2)[1]+1
+sperawords2t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords2t)<-c("ID",as.character(sperawords2$a))
+sperawords2tt<-sperawords2t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$二诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords2tt<-full_join(sperawords2tt, tmpwordt)
+  print(i)
+}
+write.csv(sperawords2tt,'二诊.csv') 
+
+
+#三诊词频
+for (i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$三诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords3<-rbind(sperawords3, tmpword)
+  names(sperawords3)<-'a'
+}
+
+sperawords3<-unique(sperawords3)
+dims<-dim(sperawords3)[1]+1
+sperawords3t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords3t)<-c("ID",as.character(sperawords3$a))
+sperawords3tt<-sperawords3t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$三诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords3tt<-full_join(sperawords3tt, tmpwordt)
+  print(i)
+}
+write.csv(sperawords3tt,'三诊.csv') 
+
+
+#四诊词频
+for (i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$四诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords4<-rbind(sperawords4, tmpword)
+  names(sperawords4)<-'a'
+}
+
+sperawords4<-unique(sperawords4)
+dims<-dim(sperawords4)[1]+1
+sperawords4t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords4t)<-c("ID",as.character(sperawords4$a))
+sperawords4tt<-sperawords4t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$四诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords4tt<-full_join(sperawords4tt, tmpwordt)
+  print(i)
+}
+write.csv(sperawords4tt,'四诊.csv') 
+
+
+#五诊词频
+for (i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$五诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords5<-rbind(sperawords5, tmpword)
+  names(sperawords5)<-'a'
+}
+
+sperawords5<-unique(sperawords5)
+dims<-dim(sperawords5)[1]+1
+sperawords5t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords5t)<-c("ID",as.character(sperawords5$a))
+sperawords5tt<-sperawords5t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$五诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords5tt<-full_join(sperawords5tt, tmpwordt)
+  print(i)
+}
+write.csv(sperawords5tt,'五诊.csv') 
+
+
+#六诊词频
+for (i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$六诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords6<-rbind(sperawords6, tmpword)
+  names(sperawords6)<-'a'
+}
+
+sperawords6<-unique(sperawords6)
+dims<-dim(sperawords6)[1]+1
+sperawords6t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords6t)<-c("ID",as.character(sperawords6$a))
+sperawords6tt<-sperawords6t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$六诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords6tt<-full_join(sperawords6tt, tmpwordt)
+  print(i)
+}
+write.csv(sperawords6tt,'六诊.csv') 
+
+
+#七诊词频
+for (i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$七诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords7<-rbind(sperawords7, tmpword)
+  names(sperawords7)<-'a'
+}
+
+sperawords7<-unique(sperawords7)
+dims<-dim(sperawords7)[1]+1
+sperawords7t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords7t)<-c("ID",as.character(sperawords7$a))
+sperawords7tt<-sperawords7t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$七诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords7tt<-full_join(sperawords7tt, tmpwordt)
+  print(i)
+}
+write.csv(sperawords7tt,'七诊.csv') 
+
+
+#八诊词频
+for (i in 1:dim(syptom)[i]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$八诊), mixseg )))
+  names(tmpword)<-'a'
+  sperawords8<-rbind(sperawords8, tmpword)
+  names(sperawords8)<-'a'
+}
+
+sperawords8<-unique(sperawords8)
+dims<-dim(sperawords8)[1]+1
+sperawords8t<-as.data.frame(array(,dim=c(0,dims)))
+names(sperawords8t)<-c("ID",as.character(sperawords8$a))
+sperawords8tt<-sperawords8t
+
+
+for ( i in 1:dim(syptom)[1]) {
+  tmpword<-data.frame(abcd=c(segment(as.character(syptom$八诊[i]), mixseg)))
+  tmpword<-unique(tmpword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+1
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  sperawords8tt<-full_join(sperawords8tt, tmpwordt)
+  print(i)
+}
+write.csv(sperawords8tt,'八诊.csv') 
+
+
+
+
+#词向量
+simhasher = worker("simhash",topn=4)
+
+sperawordsv1<-data.frame()
+sperawordsv2<-data.frame()
+sperawordsv3<-data.frame()
+sperawordsv4<-data.frame()
+sperawordsv5<-data.frame()
+sperawordsv6<-data.frame()
+sperawordsv7<-data.frame()
+sperawordsv8<-data.frame()
+
+a<-simhasher<=as.character(syptom$初诊[1])
+a$simhash
+a$keyword
+#初诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$初诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv1<-rbind(sperawordsv1,tmpword)
+}
+
+sperawordsv1<-unique(sperawordsv1)
+dims<-dim(sperawordsv1)[1]+2
+sperawordsv1t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv1t)<-c("ID","simhash",as.character(sperawordsv1$a))
+sperawordsv1tt<-sperawordsv1t
+sperawordsv1tt$simhash<-as.character(sperawordsv1tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$初诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv1tt<-full_join(sperawordsv1tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv1tt,'初诊simhash.csv')
+
+#二诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$二诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv2<-rbind(sperawordsv2,tmpword)
+}
+
+sperawordsv2<-unique(sperawordsv2)
+dims<-dim(sperawordsv2)[1]+2
+sperawordsv2t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv2t)<-c("ID","simhash",as.character(sperawordsv2$a))
+sperawordsv2tt<-sperawordsv2t
+sperawordsv2tt$simhash<-as.character(sperawordsv2tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$二诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv2tt<-full_join(sperawordsv2tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv2tt,'二诊simhash.csv')
+
+#三诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$三诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv3<-rbind(sperawordsv3,tmpword)
+}
+
+sperawordsv3<-unique(sperawordsv3)
+dims<-dim(sperawordsv3)[1]+2
+sperawordsv3t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv3t)<-c("ID","simhash",as.character(sperawordsv3$a))
+sperawordsv3tt<-sperawordsv3t
+sperawordsv3tt$simhash<-as.character(sperawordsv3tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$三诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv3tt<-full_join(sperawordsv3tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv3tt,'三诊simhash.csv')
+
+#四诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$四诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv4<-rbind(sperawordsv4,tmpword)
+}
+
+sperawordsv4<-unique(sperawordsv4)
+dims<-dim(sperawordsv4)[1]+2
+sperawordsv4t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv4t)<-c("ID","simhash",as.character(sperawordsv4$a))
+sperawordsv4tt<-sperawordsv4t
+sperawordsv4tt$simhash<-as.character(sperawordsv4tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$四诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv4tt<-full_join(sperawordsv4tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv4tt,'四诊simhash.csv')
+
+#五诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$五诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv5<-rbind(sperawordsv5,tmpword)
+}
+
+sperawordsv5<-unique(sperawordsv5)
+dims<-dim(sperawordsv5)[1]+2
+sperawordsv5t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv5t)<-c("ID","simhash",as.character(sperawordsv5$a))
+sperawordsv5tt<-sperawordsv5t
+sperawordsv5tt$simhash<-as.character(sperawordsv5tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$五诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv5tt<-full_join(sperawordsv5tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv5tt,'五诊simhash.csv')
+
+#六诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$六诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv6<-rbind(sperawordsv6,tmpword)
+}
+
+sperawordsv6<-unique(sperawordsv6)
+dims<-dim(sperawordsv6)[1]+2
+sperawordsv6t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv6t)<-c("ID","simhash",as.character(sperawordsv6$a))
+sperawordsv6tt<-sperawordsv6t
+sperawordsv6tt$simhash<-as.character(sperawordsv6tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$六诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv6tt<-full_join(sperawordsv6tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv6tt,'六诊simhash.csv')
+
+#七诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$七诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv7<-rbind(sperawordsv7,tmpword)
+}
+
+sperawordsv7<-unique(sperawordsv7)
+dims<-dim(sperawordsv7)[1]+2
+sperawordsv7t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv7t)<-c("ID","simhash",as.character(sperawordsv7$a))
+sperawordsv7tt<-sperawordsv7t
+sperawordsv7tt$simhash<-as.character(sperawordsv7tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$七诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv7tt<-full_join(sperawordsv7tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv7tt,'七诊simhash.csv')
+
+#八诊词向量
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$八诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-"a"
+  sperawordsv8<-rbind(sperawordsv8,tmpword)
+}
+
+sperawordsv8<-unique(sperawordsv8)
+dims<-dim(sperawordsv8)[1]+2
+sperawordsv8t<-as.data.frame(array(dim=c(0,dims)))
+names(sperawordsv8t)<-c("ID","simhash",as.character(sperawordsv8$a))
+sperawordsv8tt<-sperawordsv8t
+sperawordsv8tt$simhash<-as.character(sperawordsv8tt$simhash)
+
+for (i in 1:dim(syptom)[1]) {
+  tmps<-simhasher<=as.character(syptom$八诊[i])
+  tmpword<-data.frame(tmps$keyword)
+  names(tmpword)<-'a'
+  DIMT<-dim(tmpword)[1]+2
+  tmpwordt<-as.data.frame(array(1,dim=c(1,DIMT)))
+  names(tmpwordt)<-c("ID","simhash",as.character(tmpword$a))
+  tmpwordt$ID[1]<-syptom$ID[i]
+  tmpwordt$simhash<-tmps$simhash
+  sperawordsv8tt<-full_join(sperawordsv8tt, tmpwordt)
+  print(i)
+}
+
+write.csv(sperawordsv8tt,'八诊simhash.csv')
+
+
