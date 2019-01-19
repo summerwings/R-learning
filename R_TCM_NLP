@@ -1,3 +1,4 @@
+#信息所数据词向量
 TCM1<-read.csv('clipboard',sep = '')
 TCM2<-read.csv('clipboard',sep = '')
 TCM3<-read.csv('clipboard',sep = '')
