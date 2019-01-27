@@ -1,0 +1,49 @@
+install.packages("stargazer")
+library(stargazer)
+library(meta)
+#中药VS空白
+
+formeta<-read.csv("formeta.tcm.vs.blank.csv",sep=",")
+#复发率
+RE<-metabin(E.RE,E.N,C.RE,C.N,data= formeta,studlab =paste(formeta$Study,formeta$YEAR),sm='RR')
+forest(RE,xlab = "复发事件")
+metainf(RE,sortvar = formeta$Subgroup)
+forest(metainf(RE,pooled = "fixed"))
+RE.sub<-metabin(E.RE,E.N,C.RE,C.N,data= formeta,studlab =paste(formeta$Study,formeta$YEAR),sm='RR',byvar = formeta$Subgroup)
+funnel(RE)
+metabias(RE)
+metabias(RE,method.bias = "linreg")
+metabias(RE,method.bias = "rank")
+
+sink("RE.sub.txt")
+RE.sub
+sink()
+
+pdf("复发率亚组分析.pdf",family="GB1",width = 12,height = 20)
+forest(RE.sub)
+dev.off()
+#不良反应
+ADR<-metabin(E.ADR,E.N,C.ADR,C.N,data= formeta,studlab =paste(formeta$Study,formeta$YEAR),sm='RD')
+forest(ADR,xlab = "不良反应事件",allstudies = FALSE)
+forest(ADR,xlab = "不良反应事件")
+metainf(ADR)
+#胆囊生理功能
+shrink<-metacont(E.N,as.numeric(as.character(E.Shrink)),as.numeric(as.character(E.Shrink.SD)),C.N,C.Shrink,C.Shrink.SD,
+                 data= formeta,studlab =paste(formeta$Study,formeta$YEAR),sm='MD')
+forest(shrink,xlab = "胆囊收缩率",allstudies = FALSE)
+
+thick<-metacont(E.N,as.numeric(as.character(formeta$E.Thickness)),E.Thickness.SD,C.N,C.Thickness,C.Thickness.SD,
+                data= formeta,studlab =paste(formeta$Study,formeta$YEAR),sm='MD')
+forest(thick,xlab = "胆囊壁厚度",allstudies = FALSE)
+#并发症
+SPT<-metabin(E.SPT,E.N,C.SPT,C.N,data= formeta,studlab =paste(formeta$Study,formeta$YEAR),sm='RR')
+forest(SPT,xlab = "并发症事件",allstudies = FALSE)
+forest(SPT,xlab = "并发症事件")
+
+
+
+
+
+
+
+
