@@ -1,0 +1,122 @@
+#install.packages("R2wd")
+#install.packages("RDCOMClient", repos = "http://www.omegahat.net/R", type = "source")
+#install.packages(c("rscproxy","rcom"),repos="http://www.autstat.com/download",lib=.Library,type="win.binary")
+
+library(R2wd)
+library(rcom)
+library(rscproxy)
+
+#1.数据写入与合并
+library(dplyr)
+T1S<-read.csv('总1 单次 完整版一二三四漏网之鱼 323例.txt',sep = ';')
+T2S<-read.csv('总2 单次 完整版一二三四漏网之鱼 323例.txt',sep = ';')
+T1V<-read.csv('总1 多次 完整版二三四 197例.txt',sep = ';')
+T2V<-read.csv('总2 多次 完整版二三四 200例.txt',sep = ';')
+CQ<-read.csv('陈琪纳入病例名单.csv',sep = ',')
+
+
+#1.1修改单次题头并合并
+names(T1S)[1]<-"ID"
+names(T1S)[4]<-"ICE"
+names(T1S)[6]<-"DATE"
+TS<-merge(T1S,T2S,by = c('ID',"DATE","ICE"))
+
+#1.2修改多次题头并合并
+names(T1V)[1]<-"ID"
+names(T1V)[4]<-"ICE"
+names(T1V)[6]<-"DATE"
+TV<-merge(T1V,T2V,by =c('ID',"DATE","ICE"))
+
+TT<-rbind(TS,TV)
+
+#1.3修改整体题头
+TT.TT<-c(colnames(TT)) 
+grep("ICEHOCKEYC", TT.TT)
+#修改病灶
+#左右两侧{side}:1.左肺  2.右肺
+#左肺{left}:#1.上叶（0，1） 2.下叶（0，1） 3.贯穿上下肺叶（0，1） 分类为哑变量
+#右肺上叶{Right}.{upper}.lobe:1.是0.否
+#右肺中叶{Right}.{middl}e.lobe:#1.是0.否
+#右肺下叶{Right}.{lower}.lobe:#1.是0.否
+#解剖结构{Anatomical}.structure:#1.周围型 2.中央型
+#术前病灶是否贴近脏层胸膜{preop}.{Dirty}.pleura:#1.是0.否
+#术前病灶是否紧贴或压迫纵膈{preop}.{Media}stinum：#1.是0.否
+#术前病灶是否邻近支气管{preop}.{bronc}hus：#1.是0.否
+#术前病灶是否邻近血管{preop}.{Blood}vessel：#1.是0.否
+#术前病灶是否靠近肺门{preop}.{Lungg}ate：#1.是 0.否
+#冷冻范围是否包括部分脏层胸膜{frozenrage}.Dirty.pleura:#1.是0.否
+#{frozenrag1} 冷冻范围是否包括部分纵膈frozenrage.Mediastinum：#1.是0.否
+#{frozenrag2} 冷冻范围是否包括部分肺门frozenrage.Lunggate：#1.是0.否
+#{frozenrag3} 冷冻范围是否包括血管frozenrage.Bloodvessel：#1.是0.否
+#{frozenrag4} 冷冻范围是否包括皮肤frozenrage.skin：#1.是0.否
+
+TT$SIDE<-TT$SIDE-1
+TT[grep("RIGHTUPPER", TT.TT):grep("RIGHTLOWER", TT.TT)]<-TT[grep("RIGHTUPPER", TT.TT):grep("RIGHTLOWER", TT.TT)]*-1+2
+TT[grep("ANATOMICAL", TT.TT):grep("FROZENRAG4", TT.TT)]<-TT[grep("ANATOMICAL", TT.TT):grep("FROZENRAG4", TT.TT)]*-1+2
+colnames(TT)[grep("SIDE", TT.TT):grep("FROZENRAG4", TT.TT)]<-c("左右两侧","左肺",
+                                                               "右肺上叶","右肺中叶","右肺下叶",
+                                                               "解剖结构",
+                                                               "贴近脏层胸膜","紧贴或压迫纵膈",
+                                                               "邻近支气管","邻近血管",
+                                                               "靠近肺门",
+                                                               "包括部分脏层胸膜","包括部分纵膈",
+                                                               "包括部分肺门","包括血管","包括皮肤")
+
+TT.TT<-c(colnames(TT)) 
+TT<-data.frame(TT,"左肺上叶"=NA,"左肺下叶"=NA,"贯穿左上下肺叶"=NA)
+TT$左肺上叶[which(TT$左肺==1)]<-1
+TT$左肺上叶[which(TT$左肺!=1)]<-0
+TT$左肺下叶[which(TT$左肺==2)]<-1
+TT$左肺下叶[which(TT$左肺!=2)]<-0
+TT$贯穿左上下肺叶[which(TT$左肺==3)]<-1
+TT$贯穿左上下肺叶[which(TT$左肺!=3)]<-0
+
+
+TT<-TT[,-grep("左肺", TT.TT)]
+
+
+#修改覆盖率题头->ICE.COVER.RATE
+#0=冰球覆盖率＜60%,1=60%≤冰球覆盖率≤85%,2=85%＜冰球覆盖率≤100%,3=冰球覆盖率＞100%
+colnames(TT)[grep("ICEHOCKEYC", TT.TT)]<-"ICE.COVER.RATE"
+
+
+TT$ICE.COVER.RATE[(TT['ICE.COVER.RATE']> 0) & (TT['ICE.COVER.RATE']<60)]<-1
+TT$ICE.COVER.RATE[(TT['ICE.COVER.RATE']>= 60) & (TT['ICE.COVER.RATE']<=85)]<-2
+TT$ICE.COVER.RATE[(TT['ICE.COVER.RATE']> 85) & (TT['ICE.COVER.RATE']<=100)]<-3
+TT$ICE.COVER.RATE[which(TT$ICE.COVER.RATE==0)]<-4
+TT$ICE.COVER.RATE<-TT$ICE.COVER.RATE-1
+
+#修改死亡,第一次随访死亡<-"First.fellow.death"，第二次随访死亡<-"Second.fellow.death"
+#0<-生存 1<-死亡
+colnames(TT)[grep("DEATH1", TT.TT)]<-"First.fellow.death"
+TT$First.fellow.death<-TT$First.fellow.death-1
+colnames(TT)[grep("DEATH2", TT.TT)]<-"Second.fellow.death"
+TT$Second.fellow.death<-TT$Second.fellow.death-1
+
+
+
+
+
+
+
+#2合并陈琪数据
+colnames(CQ)[2]<-"ID"
+colnames(CQ)[5]<-"DATE"
+CQ.T<-merge(CQ,TT,by = c('ID',"DATE"))
+CQQ<-colnames(CQ.T)
+
+CQ.FD<-data.frame("ID"=CQ.T$ID,"DATE"=CQ.T$DATE,"NAME"=CQ.T$INFORMNAME
+                  ,"第一次随访死亡"=CQ.T$First.fellow.death,"第二次随访死亡"=CQ.T$Second.fellow.death
+                  ,"冰球覆盖率"=CQ.T$ICE.COVER.RATE,CQ.T[grep("左右两侧", CQQ):grep("包括皮肤",CQQ )],
+                  CQ.T[grep("左肺上叶",CQQ ):grep("贯穿左上下肺叶",CQQ )])
+summary(glm(第一次随访死亡~冰球覆盖率+左右两侧+右肺上叶+右肺中叶+
+                     右肺下叶+解剖结构+贴近脏层胸膜+紧贴或压迫纵膈+邻近支气管+
+                     邻近血管+靠近肺门+包括部分脏层胸膜+包括部分纵膈+包括部分肺门+
+                     包括血管+包括皮肤,data= CQ.FD))
+write.csv(CQ.FD,'CQ.csv',row.names = FALSE)
+#
+
+
+
+
+
