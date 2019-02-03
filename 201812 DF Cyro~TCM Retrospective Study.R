@@ -2,9 +2,9 @@
 #install.packages("RDCOMClient", repos = "http://www.omegahat.net/R", type = "source")
 #install.packages(c("rscproxy","rcom"),repos="http://www.autstat.com/download",lib=.Library,type="win.binary")
 
-library(R2wd)
-library(rcom)
-library(rscproxy)
+#library(R2wd)
+#library(rcom)
+#library(rscproxy)
 
 #1.数据写入与合并
 library(dplyr)
@@ -32,6 +32,7 @@ TT<-rbind(TS,TV)
 #1.3修改整体题头
 TT.TT<-c(colnames(TT)) 
 grep("ICEHOCKEYC", TT.TT)
+
 #修改病灶
 #左右两侧{side}:1.左肺  2.右肺
 #左肺{left}:#1.上叶（0，1） 2.下叶（0，1） 3.贯穿上下肺叶（0，1） 分类为哑变量
@@ -49,7 +50,7 @@ grep("ICEHOCKEYC", TT.TT)
 #{frozenrag2} 冷冻范围是否包括部分肺门frozenrage.Lunggate：#1.是0.否
 #{frozenrag3} 冷冻范围是否包括血管frozenrage.Bloodvessel：#1.是0.否
 #{frozenrag4} 冷冻范围是否包括皮肤frozenrage.skin：#1.是0.否
-
+TT.TT<-c(colnames(TT)) 
 TT$SIDE<-TT$SIDE-1
 TT[grep("RIGHTUPPER", TT.TT):grep("RIGHTLOWER", TT.TT)]<-TT[grep("RIGHTUPPER", TT.TT):grep("RIGHTLOWER", TT.TT)]*-1+2
 TT[grep("ANATOMICAL", TT.TT):grep("FROZENRAG4", TT.TT)]<-TT[grep("ANATOMICAL", TT.TT):grep("FROZENRAG4", TT.TT)]*-1+2
@@ -77,6 +78,7 @@ TT<-TT[,-grep("左肺", TT.TT)]
 
 #修改覆盖率题头->ICE.COVER.RATE
 #0=冰球覆盖率＜60%,1=60%≤冰球覆盖率≤85%,2=85%＜冰球覆盖率≤100%,3=冰球覆盖率＞100%
+TT.TT<-c(colnames(TT)) 
 colnames(TT)[grep("ICEHOCKEYC", TT.TT)]<-"ICE.COVER.RATE"
 
 
@@ -88,16 +90,61 @@ TT$ICE.COVER.RATE<-TT$ICE.COVER.RATE-1
 
 #修改死亡,第一次随访死亡<-"First.fellow.death"，第二次随访死亡<-"Second.fellow.death"
 #0<-生存 1<-死亡
+TT.TT<-c(colnames(TT)) 
 colnames(TT)[grep("DEATH1", TT.TT)]<-"First.fellow.death"
 TT$First.fellow.death<-TT$First.fellow.death-1
 colnames(TT)[grep("DEATH2", TT.TT)]<-"Second.fellow.death"
 TT$Second.fellow.death<-TT$Second.fellow.death-1
 
 
+#修改术后影像学+MREC疗效
+TT<-data.frame(TT,post1month=NA,post3month=NA,post6month=NA,
+               post12month=NA,post36month=NA,post60month=NA)
+TT.TT<-c(colnames(TT)) 
+POSTDATE.NUM<-c(grep(list("POSTOPDATE"), TT.TT),
+                grep(list("POSTOPDAT1"), TT.TT),
+                grep(list("POSTOPDAT2"), TT.TT),
+                grep(list("POSTOPDAT3"), TT.TT),
+                grep(list("POSTOPDAT4"), TT.TT),
+                grep(list("POSTOPDAT5"), TT.TT),
+                grep(list("POSTOPDAT6"), TT.TT))
 
 
+#修改并发症
+TT.TT<-c(colnames(TT)) 
+TT$COM
 
 
+for (i in POSTDATE.NUM){
+      for (h in 1:length(TT$ID)){
+        
+        if(is.na(TT[h,i]-TT[h,2])){
+        }
+        else{
+        if(TT[h,i]-TT[h,2]<=30){
+            TT$post1month[h]<-TT[h,i+3]            
+        }
+        else if(TT[h,i]-TT[h,2]<=90){
+            TT$post3month[h]<-TT[h,i+3]  
+        }
+        else if(TT[h,i]-TT[h,2]<=180){
+          TT$post6month[h]<-TT[h,i+3]  
+        }        
+        else if(TT[h,i]-TT[h,2]<=365){
+          TT$post12month[h]<-TT[h,i+3]  
+        }     
+        else if(TT[h,i]-TT[h,2]<=1095){
+          TT$post36month[h]<-TT[h,i+3]  
+        }     
+        else if(TT[h,i]-TT[h,2]<=1825){
+          TT$post60month[h]<-TT[h,i+3]  
+        }     
+      }
+      }
+}
+TT.TT<-c(colnames(TT)) 
+TT[grep("post1month",TT.TT):grep("post60month",TT.TT)]<-
+  TT[grep("post1month",TT.TT):grep("post60month",TT.TT)]*-1+5
 
 #2合并陈琪数据
 colnames(CQ)[2]<-"ID"
@@ -107,14 +154,20 @@ CQQ<-colnames(CQ.T)
 
 CQ.FD<-data.frame("ID"=CQ.T$ID,"DATE"=CQ.T$DATE,"NAME"=CQ.T$INFORMNAME
                   ,"第一次随访死亡"=CQ.T$First.fellow.death,"第二次随访死亡"=CQ.T$Second.fellow.death
-                  ,"冰球覆盖率"=CQ.T$ICE.COVER.RATE,CQ.T[grep("左右两侧", CQQ):grep("包括皮肤",CQQ )],
-                  CQ.T[grep("左肺上叶",CQQ ):grep("贯穿左上下肺叶",CQQ )])
-summary(glm(第一次随访死亡~冰球覆盖率+左右两侧+右肺上叶+右肺中叶+
-                     右肺下叶+解剖结构+贴近脏层胸膜+紧贴或压迫纵膈+邻近支气管+
-                     邻近血管+靠近肺门+包括部分脏层胸膜+包括部分纵膈+包括部分肺门+
-                     包括血管+包括皮肤,data= CQ.FD))
+                  ,"冰球覆盖率"=CQ.T$ICE.COVER.RATE,
+                  CQ.T[grep("左肺上叶",CQQ ):grep("贯穿左上下肺叶",CQQ )],
+                  CQ.T[grep("左右两侧", CQQ):grep("包括皮肤",CQQ )],
+                  CQ.T[grep("post1month",CQQ ):grep("post60month",CQQ )])
+
+CQQ<-colnames(CQ.FD)
+colnames(CQ.FD)[grep("post1month",CQQ ):grep("post60month",CQQ )]=c("1月疗效","3月疗效",
+         "6月疗效","12月疗效",
+         "36月疗效","60月疗效")
+
 write.csv(CQ.FD,'CQ.csv',row.names = FALSE)
-#
+
+#3合并张思奇数据
+
 
 
 
