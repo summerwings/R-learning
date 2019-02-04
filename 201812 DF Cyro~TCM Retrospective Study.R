@@ -253,6 +253,41 @@ TT["吸烟史"][TT["吸烟史"]==1]=0
 TT["吸烟史"][TT["吸烟史"]==2]=1
 TT["吸烟史"][TT["吸烟史"]==3]=NA
 
+#术后处理
+TT.TT<-c(colnames(TT))
+TT[grep(list("POSTOPANTI"),TT.TT)]<-TT[grep(list("POSTOPANTI"),TT.TT)]-1
+TT[grep(list("POSTOPHEMO"),TT.TT)]<-TT[grep(list("POSTOPHEMO"),TT.TT)]-1
+TT[grep(list("POSTOPALKA"),TT.TT)]<-TT[grep(list("POSTOPALKA"),TT.TT)]-1
+colnames(TT)[grep(list("POSTOPANTI"),TT.TT)]<-"术后抗生素"
+colnames(TT)[grep(list("POSTOPHEMO"),TT.TT)]<-"术后止血药物"
+colnames(TT)[grep(list("POSTOPALKA"),TT.TT)]<-"术后碱化尿液药物"
+
+#全程治疗
+TT.TT<-c(colnames(TT))
+
+TT[grep(list("SURGEYQCSU"),TT.TT)]<-TT[grep(list("SURGEYQCSU"),TT.TT)]-1
+TT[grep(list("QCRADIOTHE"),TT.TT)]<-TT[grep(list("QCRADIOTHE"),TT.TT)]-1
+TT[grep(list("QCCHEMOTHE"),TT.TT)]<-TT[grep(list("QCCHEMOTHE"),TT.TT)]-1
+TT[grep(list("QCVASCULAR"),TT.TT)]<-TT[grep(list("QCVASCULAR"),TT.TT)]-1
+TT[grep(list("QCABLATION"),TT.TT)]<-TT[grep(list("QCABLATION"),TT.TT)]-1
+TT[grep(list("QCOTHERSYS"),TT.TT)]<-TT[grep(list("QCOTHERSYS"),TT.TT)]-1
+TT[grep(list("QCCHINESEM"),TT.TT)]<-TT[grep(list("QCCHINESEM"),TT.TT)]-1
+
+colnames(TT)[grep(list("SURGEYQCSU"),TT.TT)]<-"全程手术"
+colnames(TT)[grep(list("QCRADIOTHE"),TT.TT)]<-"全程放射"
+colnames(TT)[grep(list("QCCHEMOTHE"),TT.TT)]<-"全程化疗"
+colnames(TT)[grep(list("QCVASCULAR"),TT.TT)]<-"全程血管介入"
+colnames(TT)[grep(list("QCABLATION"),TT.TT)]<-"全程消融"
+colnames(TT)[grep(list("QCOTHERSYS"),TT.TT)]<-"全程其他全身疗法"
+colnames(TT)[grep(list("QCCHINESEM"),TT.TT)]<-"全程中医治疗"
+
+
+
+#
+QCVASCULAR
+
+
+
 #2合并陈琪数据
 colnames(CQ)[2]<-"ID"
 colnames(CQ)[5]<-"DATE"
@@ -285,6 +320,10 @@ ZSQ.FD<-data.frame("ID"=ZSQ.T$ID,"DATE"=ZSQ.T$DATE,"NAME"=ZSQ.T$INFORMNAME,
                            "合并糖尿病","合并冠心病",
                            "合并高血压","合并高脂血症",
                            "合并脑卒中","合并重要脏器衰竭")],
+                   ZSQ.T[c("全程手术"，"全程放射"，
+                   "全程化疗"，"全程血管介入"，
+                   "全程消融"，"全程其他全身疗法"，
+                   "全程中医治疗")]
                    "术前病灶大小"=ZSQ.T$术前病灶大小,
                    "术前活性病灶大小"=ZSQ.T$术前活性病灶大小,
                    "术中并发症"=ZSQ.T$COMPLICATI-1,
@@ -305,10 +344,8 @@ ZSQ.FD<-data.frame("ID"=ZSQ.T$ID,"DATE"=ZSQ.T$DATE,"NAME"=ZSQ.T$INFORMNAME,
                    "手术进针量"=ZSQ.T$手术进针量,
                    "冰球覆盖率"=ZSQ.T$ICE.COVER.RATE,
                    ZSQ.T[grep("左肺上叶",ZSQQ ):grep("贯穿左上下肺叶",ZSQQ )],
-                   ZSQ.T[grep("左右两侧", ZSQQ):grep("包括皮肤",ZSQQ )]
+                   ZSQ.T[grep("左右两侧", ZSQQ):grep("包括皮肤",ZSQQ )],
+                   ZSQ.T[c("术后抗生素","术后止血药物","术后碱化尿液药物")]
                                       )
 
 write.csv(ZSQ.FD,'ZSQ.csv',row.names = FALSE)
-
-
-
