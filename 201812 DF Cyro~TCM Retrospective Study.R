@@ -7,13 +7,13 @@
 #library(rscproxy)
 
 #1.数据写入与合并
-library(dplyr)
-T1S<-read.csv('总1 单次 完整版一二三四漏网之鱼 323例.txt',sep = ';')
-T2S<-read.csv('总2 单次 完整版一二三四漏网之鱼 323例.txt',sep = ';')
-T1V<-read.csv('总1 多次 完整版二三四 197例.txt',sep = ';')
-T2V<-read.csv('总2 多次 完整版二三四 200例.txt',sep = ';')
-CQ<-read.csv('陈琪纳入病例名单.csv',sep = ',')
-
+#library(dplyr)
+#T1S<-read.csv('总1 单次 完整版一二三四漏网之鱼 323例.txt',sep = ';')
+#T2S<-read.csv('总2 单次 完整版一二三四漏网之鱼 323例.txt',sep = ';')
+#T1V<-read.csv('总1 多次 完整版二三四 197例.txt',sep = ';')
+#T2V<-read.csv('总2 多次 完整版二三四 200例.txt',sep = ';')
+#CQ<-read.csv('陈琪纳入病例名单.csv',sep = ',')
+#ZSQ<-read.csv('clipboard',sep = '')
 
 #1.1修改单次题头并合并
 names(T1S)[1]<-"ID"
@@ -110,10 +110,6 @@ POSTDATE.NUM<-c(grep(list("POSTOPDATE"), TT.TT),
                 grep(list("POSTOPDAT6"), TT.TT))
 
 
-#修改并发症
-TT.TT<-c(colnames(TT)) 
-TT$COM
-
 
 for (i in POSTDATE.NUM){
       for (h in 1:length(TT$ID)){
@@ -146,6 +142,104 @@ TT.TT<-c(colnames(TT))
 TT[grep("post1month",TT.TT):grep("post60month",TT.TT)]<-
   TT[grep("post1month",TT.TT):grep("post60month",TT.TT)]*-1+5
 
+
+
+
+#修改并中发症
+TT.TT<-c(colnames(TT)) 
+grep(list("COMPLICATI"), TT.TT)
+(grep(list("OTHEROP1"), TT.TT)[1]-grep(list("COP"), TT.TT)[1])/4
+COMP.IN.SU<-c()
+for (i in 1:12) {
+  COMP.IN.SU<-append(COMP.IN.SU,grep("COMPLICATI", TT.TT)[1]+4*i-3)
+}
+TT[COMP.IN.SU]<-TT[COMP.IN.SU]-1
+
+colnames(TT)[COMP.IN.SU]<-c("术中咳嗽","术中咯血","术中气胸",
+                            "术中发热","术中手术部位疼痛","术中肺部感染",
+                            "术中胸腔积液","术中冷休克","术中肿瘤溶解综合征",
+                            "术中灶周出血","术中神经损伤","术中心律失常")
+
+TT.TT<-c(colnames(TT))
+grep(list("COMPLICATI"), TT.TT)
+(grep(list("OTHEROP1"), TT.TT)[1]-grep(list("COP"), TT.TT)[1])/4
+COMP.IN.SU<-c()
+for (i in 1:12) {
+  COMP.IN.SU<-append(COMP.IN.SU,grep("COMPLICATI", TT.TT)[1]+4*i)
+}
+
+colnames(TT)[COMP.IN.SU]<-c("术中咳嗽持续时间","术中咯血持续时间","术中气胸持续时间",
+                            "术中发热持续时间","术中手术部位疼痛持续时间","术中肺部感染持续时间",
+                            "术中胸腔积液持续时间","术中冷休克持续时间","术中肿瘤溶解综合征持续时间",
+                            "术中灶周出血持续时间","术中神经损伤持续时间","术中心律失常持续时间")
+
+
+
+#修改并后并发症
+TT.TT<-c(colnames(TT)) 
+grep(list("COMPLICAT1"), TT.TT)
+(grep(list("OTHERPOSTO"), TT.TT)[1]-grep(list("CPOSTOP"), TT.TT)[1])/8
+COMP.PO.SU<-c()
+for (i in 1:12) {
+  COMP.PO.SU<-append(COMP.PO.SU,grep("COMPLICAT1", TT.TT)[1]+8*i-7)
+}
+TT[COMP.PO.SU]<-TT[COMP.PO.SU]-1
+
+colnames(TT)[COMP.PO.SU]<-c("术后咳嗽","术后咯血","术后气胸",
+                            "术后发热","术后手术部位疼痛","术后肺部感染",
+                            "术后胸腔积液","术后冷休克","术后肿瘤溶解综合征",
+                            "术后灶周出血","术后神经损伤","术后心律失常")
+TT.TT<-c(colnames(TT))
+grep(list("COMPLICAT1"), TT.TT)
+(grep(list("OTHERPOSTO"), TT.TT)[1]-grep(list("CPOSTOP"), TT.TT)[1])/8
+COMP.PO.SU<-c()
+for (i in 1:12) {
+  COMP.PO.SU<-append(COMP.PO.SU,grep("COMPLICAT1", TT.TT)[1]+8*i)
+}
+
+colnames(TT)[COMP.PO.SU]<-c("术后咳嗽持续时间","术后咯血持续时间","术后气胸持续时间",
+                            "术后发热持续时间","术后手术部位疼痛持续时间","术后肺部感染持续时间",
+                            "术后胸腔积液持续时间","术后冷休克持续时间","术后肿瘤溶解综合征持续时间",
+                            "术后灶周出血持续时间","术后神经损伤持续时间","术后心律失常持续时间")
+
+
+
+#术前病灶
+TT.TT<-c(colnames(TT))
+colnames(TT)[grep(list("PREOPTOTAL"),TT.TT)]<-"术前病灶大小"
+colnames(TT)[grep(list("PREOPACTIV"),TT.TT)]<-"术前活性病灶大小"
+
+#术前分期
+TT.TT<-c(colnames(TT))
+colnames(TT)[grep(list("FDAFGSSCDI"),TT.TT)]<-"术前T分类"
+colnames(TT)[grep(list("FDAFGSSCD1"),TT.TT)]<-"术前N分类"
+colnames(TT)[grep(list("FDAFGSSCD2"),TT.TT)]<-"术前M分类"
+
+#术前合并疾病
+TT.TT<-c(colnames(TT))
+
+colnames(TT)[grep(list("HBLUNGDISE"),TT.TT)]<-"合并肺病"
+TT$合并肺病<-TT$合并肺病-1
+HB.DIS<-c()
+for (i in 1:6) {
+  HB.DIS<-append(HB.DIS,grep("HBDIABETES", TT.TT)[1]+2*i-2)
+}
+TT[HB.DIS][TT[HB.DIS]==1]=1
+TT[HB.DIS][TT[HB.DIS]==2]=1
+TT[HB.DIS][TT[HB.DIS]==3]=0
+colnames(TT)[HB.DIS]<-c("合并糖尿病","合并冠心病",
+                            "合并高血压","合并高脂血症",
+                            "合并脑卒中","合并重要脏器衰竭")
+
+#术后分期
+
+
+#术前体位+进针
+TT.TT<-c(colnames(TT))
+colnames(TT)[grep(list("POSITION"),TT.TT)]<-"手术体位"
+colnames(TT)[grep(list("AMOUNT"),TT.TT)]<-"手术进针量"
+
+
 #2合并陈琪数据
 colnames(CQ)[2]<-"ID"
 colnames(CQ)[5]<-"DATE"
@@ -167,9 +261,40 @@ colnames(CQ.FD)[grep("post1month",CQQ ):grep("post60month",CQQ )]=c("1月疗效"
 write.csv(CQ.FD,'CQ.csv',row.names = FALSE)
 
 #3合并张思奇数据
+colnames(ZSQ)[1]<-"ID"
+colnames(ZSQ)[4]<-"DATE"
+ZSQ.T<-merge(ZSQ,TT,by = c('ID',"DATE"))
+ZSQQ<-colnames(ZSQ.T)
+ZSQ.FD<-data.frame("ID"=ZSQ.T$ID,"DATE"=ZSQ.T$DATE,"NAME"=ZSQ.T$INFORMNAME,
+                   ZSQ.T[c("术前T分类","术前N分类","术前M分类")],
+                   ZSQ.T[c("合并肺病",
+                           "合并糖尿病","合并冠心病",
+                           "合并高血压","合并高脂血症",
+                           "合并脑卒中","合并重要脏器衰竭")],
+                   "术前病灶大小"=ZSQ.T$术前病灶大小,
+                   "术前活性病灶大小"=ZSQ.T$术前活性病灶大小,
+                   "术中并发症"=ZSQ.T$COMPLICATI-1,
+                   ZSQ.T[c("术中咳嗽","术中咯血","术中气胸",
+                         "术中发热","术中手术部位疼痛","术中肺部感染",
+                         "术中胸腔积液","术中冷休克","术中肿瘤溶解综合征",
+                         "术中灶周出血","术中神经损伤","术中心律失常")],
+                   ZSQ.T[c("术中咳嗽持续时间","术中咯血持续时间","术中气胸持续时间",
+                           "术中发热持续时间","术中手术部位疼痛持续时间","术中肺部感染持续时间",
+                           "术中胸腔积液持续时间","术中冷休克持续时间","术中肿瘤溶解综合征持续时间",
+                           "术中灶周出血持续时间","术中神经损伤持续时间","术中心律失常持续时间")],
+                   "术后并发症"=ZSQ.T$COMPLICAT1-1,
+                   ZSQ.T[c("术后咳嗽持续时间","术后咯血持续时间","术后气胸持续时间",
+                           "术后发热持续时间","术后手术部位疼痛持续时间","术后肺部感染持续时间",
+                           "术后胸腔积液持续时间","术后冷休克持续时间","术后肿瘤溶解综合征持续时间",
+                           "术后灶周出血持续时间","术后神经损伤持续时间","术后心律失常持续时间")],
+                   "手术体位"=ZSQ.T$手术体位,
+                   "手术进针量"=ZSQ.T$手术进针量,
+                   "冰球覆盖率"=ZSQ.T$ICE.COVER.RATE,
+                   ZSQ.T[grep("左肺上叶",ZSQQ ):grep("贯穿左上下肺叶",ZSQQ )],
+                   ZSQ.T[grep("左右两侧", ZSQQ):grep("包括皮肤",ZSQQ )]
+                                      )
 
-
-
+write.csv(ZSQ.FD,'ZSQ.csv',row.names = FALSE)
 
 
 
