@@ -211,9 +211,9 @@ colnames(TT)[grep(list("PREOPACTIV"),TT.TT)]<-"术前活性病灶大小"
 
 #术前分期
 TT.TT<-c(colnames(TT))
-colnames(TT)[grep(list("FDAFGSSCDI"),TT.TT)]<-"术前T分类"
-colnames(TT)[grep(list("FDAFGSSCD1"),TT.TT)]<-"术前N分类"
-colnames(TT)[grep(list("FDAFGSSCD2"),TT.TT)]<-"术前M分类"
+colnames(TT)[grep(list("FDAFGSSCDI"),TT.TT)]<-"术前T分期"
+colnames(TT)[grep(list("FDAFGSSCD1"),TT.TT)]<-"术前N分期"
+colnames(TT)[grep(list("FDAFGSSCD2"),TT.TT)]<-"术前M分期"
 
 #术前合并疾病
 TT.TT<-c(colnames(TT))
@@ -239,6 +239,19 @@ TT.TT<-c(colnames(TT))
 colnames(TT)[grep(list("POSITION"),TT.TT)]<-"手术体位"
 colnames(TT)[grep(list("AMOUNT"),TT.TT)]<-"手术进针量"
 
+#基本信息
+TT.TT<-c(colnames(TT))
+    #性别 男1 女0
+colnames(TT)[grep(list("FEASEX"),TT.TT)]<-"性别"
+TT$性别<-TT$性别*-1+2
+TT<-data.frame(TT,"年龄"=NA)
+TT$年龄<-(TT$DATE-TT$FEABD)%/%10000
+colnames(TT)[grep(list("FEASEX"),TT.TT)]
+    #吸烟 有1 无0
+colnames(TT)[grep(list("FEASMOKE"),TT.TT)]<-"吸烟史"
+TT["吸烟史"][TT["吸烟史"]==1]=0
+TT["吸烟史"][TT["吸烟史"]==2]=1
+TT["吸烟史"][TT["吸烟史"]==3]=NA
 
 #2合并陈琪数据
 colnames(CQ)[2]<-"ID"
@@ -266,7 +279,8 @@ colnames(ZSQ)[4]<-"DATE"
 ZSQ.T<-merge(ZSQ,TT,by = c('ID',"DATE"))
 ZSQQ<-colnames(ZSQ.T)
 ZSQ.FD<-data.frame("ID"=ZSQ.T$ID,"DATE"=ZSQ.T$DATE,"NAME"=ZSQ.T$INFORMNAME,
-                   ZSQ.T[c("术前T分类","术前N分类","术前M分类")],
+                   ZSQ.T[c("性别","年龄","吸烟史")],
+                   ZSQ.T[c("术前T分期","术前N分期","术前M分期")],
                    ZSQ.T[c("合并肺病",
                            "合并糖尿病","合并冠心病",
                            "合并高血压","合并高脂血症",
