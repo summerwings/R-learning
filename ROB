@@ -1,0 +1,73 @@
+#install.packages("tidyverse")
+#install.packages("ggplot2")
+#1.加载包
+library(ggplot2)
+library(tidyr)
+#2.读取文件
+ROB<-read.csv("ROB.csv",sep = ",")
+
+#3.赋予红黄绿图功能,run这一大坨
+rob.summary<-function(data){
+  rob.vars<-data.frame(data)
+  rob.vars$Author<-NULL
+  condition<-colnames( rob.vars)
+  measurement<-c("高风险","不清楚","低风险")
+  ncol.rob.vars<-ncol(rob.vars)
+  last<-colnames(rob.vars[ncol.rob.vars])
+  first<-colnames(rob.vars[1])
+  rob.long <- gather(data,
+                     condition, measurement,
+                     first:last,
+                     factor_key=TRUE)
+  rob.long$measurement<-as.factor(rob.long$measurement)
+  rob.long$measurement<-factor(rob.long$measurement,
+                               levels(rob.long$measurement)[c(3,1,2)])
+  rob.plot<-ggplot(data=rob.long)+
+    geom_bar(mapping=aes(x=condition,fill=measurement),
+             width=0.7,
+             position = "fill",
+             color="black")+
+    coord_flip(ylim = c(0,1))+
+    guides(fill = guide_legend(reverse = TRUE))+
+    scale_fill_manual("Risk of Bias",
+                      labels = c("    High risk of bias          ",
+                                 "    Unclear risk of bias       ",
+                                 "    Low risk of bias  "
+                      ),
+                      values = c("高风险" = "#BF0000",
+                                 "不清楚" = "#E2DF07",
+                                 "低风险" = "#02C100"
+                      ))+
+    scale_y_continuous(labels = scales::percent)+
+    theme(axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          axis.text.y = element_text(size=18, color = "black"),
+          axis.line.x = element_line(colour = "black",
+                                     size = 0.5, linetype = "solid"),
+          legend.position = "bottom",
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          legend.background = element_rect(linetype="solid",
+                                           colour ="black"),
+          legend.title = element_blank(),
+          legend.key.size = unit(0.75,"cm"),
+          legend.text=element_text(size=14))
+  return(rob.plot)
+}
+
+#4.画图
+plot<-rob.summary(ROB)
+#5.修改名称
+new.plot<-plot+
+  scale_x_discrete(labels=(colnames(ROB)[2:8] =c("Sequence generation",
+                                                 "Allocation Concealment",
+                                                 "Blinding of participants and personnel",
+                                                 "Blinding of outcome assessors",
+                                                 "Incomplete outcome data",
+                                                 "Selective outcome reporting",
+                                                 "Other bias")))
+#6.显示图
+new.plot
+
